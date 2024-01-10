@@ -1,0 +1,78 @@
+
+#include <stdio.h>
+#include <stdlib.h>
+
+#define SIZE 50
+
+int stack[SIZE];
+int top = -1;
+
+void push(int item) {
+    if (top == SIZE - 1) {
+        printf("Stack overflow\n");
+        exit(1);
+    } else {
+        top++;
+        stack[top] = item;
+    }
+}
+
+int pop() {
+    int item;
+    if (top == -1) {
+        printf("Stack underflow\n");
+        exit(1);
+    } else {
+        item = stack[top];
+        top--;
+        return item;
+    }
+}
+
+int compute(char operator, int operand1, int operand2) {
+    switch (operator) {
+        case '+':
+            return operand1 + operand2;
+        case '-':
+            return operand1 - operand2;
+        case '*':
+            return operand1 * operand2;
+        case '/':
+            if (operand2 != 0) {
+                return operand1 / operand2;
+            } else {
+                printf("Error: Division by zero\n");
+                exit(1);
+            }
+        default:
+            printf("Invalid operator\n");
+            exit(1);
+    }
+}
+
+int evaluatePostfix(char exp[]) {
+    for (int i = 0; exp[i] != '\0'; i++) {
+        if (isdigit(exp[i])) {
+            push(exp[i] - '0');
+        } else if (exp[i] == '+' || exp[i] == '-' || exp[i] == '*' || exp[i] == '/') {
+            int op2 = pop();
+            int op1 = pop();
+            int result = compute(exp[i], op1, op2);
+            push(result);
+        }
+    }
+
+    return stack[top];
+}
+
+int main() {
+    char postfixExpression[SIZE];
+
+    printf("Enter postfix expression: ");
+    gets(postfixExpression);
+    int result = evaluatePostfix(postfixExpression);
+
+    printf("Result: %d\n", result);
+
+    return 0;
+}
