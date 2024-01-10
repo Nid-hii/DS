@@ -1,0 +1,99 @@
+LAB2
+INFIX TO POSTFIX
+#include <stdio.h>
+#include <stdlib.h>
+#include <ctype.h>
+
+#define SIZE 50
+
+char stack[SIZE];
+int top = -1;
+
+void push(char item) {
+    if (top == SIZE - 1) {
+        printf("Stack overflow\n");
+        exit(1);
+    } else {
+        top++;
+        stack[top] = item;
+    }
+}
+
+char pop() {
+    char item;
+    if (top == -1) {
+        printf("Stack underflow\n");
+        exit(1);
+    } else {
+        item = stack[top];
+        top--;
+        return item;
+    }
+}
+
+int precedence(char symbol) {
+    if (symbol == '^') {
+        return 3;
+    } else if (symbol == '*' || symbol == '/') {
+        return 2;
+    } else if (symbol == '+' || symbol == '-') {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+int isOperator(char symbol) {
+    return (symbol == '^' || symbol == '*' || symbol == '/' || symbol == '+' || symbol == '-');
+}
+
+void infixToPostfix(char infix[], char postfix[]) {
+    int i = 0, j = 0;
+    char symbol, temp;
+
+    push('#');
+
+    while (infix[i] != '\0') {
+        symbol = infix[i];
+
+        if (symbol == '(') {
+            push(symbol);
+        } else if (isalnum(symbol)) {
+            postfix[j++] = symbol;
+        } else if (symbol == ')') {
+            while (stack[top] != '(') {
+                temp = pop();
+                postfix[j++] = temp;
+            }
+            pop();
+        } else if (isOperator(symbol)) {
+            while (precedence(stack[top]) >= precedence(symbol)) {
+                temp = pop();
+                postfix[j++] = temp;
+            }
+            push(symbol);
+        }
+
+        i++;
+    }
+
+    while (stack[top] != '#') {
+        temp = pop();
+        postfix[j++] = temp;
+    }
+
+    postfix[j] = '\0';
+}
+
+int main() {
+    char infix[SIZE], postfix[SIZE];
+
+    printf("Enter infix expression: ");
+    gets(infix);
+
+    infixToPostfix(infix, postfix);
+
+    printf("Postfix expression: %s\n", postfix);
+
+    return 0;
+}
