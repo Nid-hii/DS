@@ -81,3 +81,4 @@ for(int i=0;i<4;i++){
 ptr2[i]=i*2;
 
 printf("%d\t",ptr2[i]);}
+retuen 0;}
